@@ -5,14 +5,8 @@ import org.example.task12.jdbc.ObjectToSql;
 import org.example.task12.jdbc.entity.Student;
 import org.example.threads.Count;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Hello world!
@@ -42,10 +36,10 @@ public class App {
         try {
             //One By One
             for (int i = 0; i < 4; i++) {
-                long start = System.currentTimeMillis();
+                long start = Calendar.getInstance().getTimeInMillis();
                 CallableSorter callableSorter = new CallableSorter(mapListOfInteger.get(i));
                 callableSorter.call();
-                long end = System.currentTimeMillis();
+                long end = Calendar.getInstance().getTimeInMillis();
                 long delta = end - start;
                 System.out.println("Time taken to sort the array: " + delta);
 
@@ -65,7 +59,7 @@ public class App {
 
 
         //First Approach
-        long start = System.currentTimeMillis();
+        long start = Calendar.getInstance().getTimeInMillis();
         executor.submit(() -> {
 
             try {
@@ -79,12 +73,12 @@ public class App {
         });
 
 
-        long end = System.currentTimeMillis();
+        long end = Calendar.getInstance().getTimeInMillis();
         long delta = end - start;
         System.out.println("Time taken to sort the array: " + delta);
 
         //Second Approach
-        start = System.currentTimeMillis();
+        start = Calendar.getInstance().getTimeInMillis();
         List<CallableSorter> tasks = new ArrayList<>();
         tasks.add(callableSorter);
         tasks.add(callableSorter1);
@@ -92,7 +86,7 @@ public class App {
         tasks.add(callableSorter3);
 
         List<Future<Object>> resultList = executor.invokeAll(tasks);
-        end = System.currentTimeMillis();
+        end = Calendar.getInstance().getTimeInMillis();
         delta = end - start;
         System.out.println("Time taken to sort the array: " + delta);
 
@@ -100,6 +94,21 @@ public class App {
             System.out.println("The result is: " + future.get() + " and task done is " + future.isDone());
         }
 
+
+        // Third Approach
+
+        FutureTask<Object> futureTask = new FutureTask<>(callableSorter);
+        FutureTask<Object> futureTask1 = new FutureTask<>(callableSorter1);
+        FutureTask<Object> futureTask2 = new FutureTask<>(callableSorter2);
+        FutureTask<Object> futureTask3 = new FutureTask<>(callableSorter3);
+        long timeStartFuture = Calendar.getInstance().getTimeInMillis();
+        executor.execute(futureTask);
+        executor.execute(futureTask1);
+        executor.execute(futureTask2);
+        executor.execute(futureTask3);
+        long timeEndFuture = Calendar.getInstance().getTimeInMillis();
+        long timeNeededFuture = timeEndFuture - timeStartFuture;
+        System.out.println("Time taken to sort the array: " + timeNeededFuture);
 
         executor.shutdown();
         //Task 12 // 13 // 14
